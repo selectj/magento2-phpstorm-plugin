@@ -85,7 +85,7 @@ public class RegExUtil {
                 "^(\\\\)?(\\w+\\\\){1}(\\w+\\\\){1}Test(\\\\\\w+)+$";
 
         public static final String CUSTOM_VENDOR_NAME =
-                "app\\/code\\/(\\w+)\\/";
+                "/(\\w+)\\/";
 
         public static final String COMMA_SEPARATED_STRING =
                 "^[^\\s,]+(?:,\\s*[^\\s,]+)*$";

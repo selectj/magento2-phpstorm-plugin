@@ -120,9 +120,6 @@ public final class GetMagentoModuleUtil {
             final @NotNull PsiDirectory directory,
             final @NotNull String basePath
     ) {
-        if (basePath.equals(directory.getVirtualFile().getPath())) {
-            return null;
-        }
         final PsiFile registration = directory.findFile(RegistrationPhp.FILE_NAME);
 
         if (registration != null) {
