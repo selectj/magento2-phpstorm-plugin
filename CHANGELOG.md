@@ -4,6 +4,40 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0).
 
+## 2025.2.1
+
+### Fixed
+
+- Multiple issues in BCT [#2589](https://github.com/magento/magento2-phpstorm-plugin/pull/2589)
+
+## 2025.2.0
+
+### Fixed
+
+- Thread context was already set [#2550](https://github.com/magento/magento2-phpstorm-plugin/pull/2550)
+- Argument for @NotNull parameter 'psiDirectory' [#2553](https://github.com/magento/magento2-phpstorm-plugin/pull/2553)
+
+## 2025.1.1
+
+### Fixed
+
+- The themes select is empty [#2527](https://github.com/magento/magento2-phpstorm-plugin/pull/2527)
+- PS.MarkRootGroup isn't registered so the action won't be added to it [#2527](https://github.com/magento/magento2-phpstorm-plugin/pull/2527)
+
+## 2025.1.0
+
+### Added
+
+- Possibility to add additional code source directories using content root feature [#2504](https://github.com/magento/magento2-phpstorm-plugin/pull/2504)
+
+### Fixed
+
+- Compatibility with PhpStorm/IntelliJ 2025.* [#2495](https://github.com/magento/magento2-phpstorm-plugin/pull/2495)
+- "Copy Path/Reference" does not show the preview value [#2497](https://github.com/magento/magento2-phpstorm-plugin/pull/2497)
+- Must not start write action from within read action in the other thread [#2498](https://github.com/magento/magento2-phpstorm-plugin/pull/2498)
+- URN map generation during indexing [#2499](https://github.com/magento/magento2-phpstorm-plugin/pull/2499)
+- Cannot invoke "com.intellij.psi.PsiDirectory.getName() [#2500](https://github.com/magento/magento2-phpstorm-plugin/pull/2500)
+
 ## 2025.0.0
 
 ### Added

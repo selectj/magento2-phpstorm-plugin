@@ -7,41 +7,44 @@
 <!-- Plugin description -->
 # PhpStorm Magento 2 Plugin
 
-This is a PhpStorm IDE plugin for a better Magento 2 development workflow.
-
-## Version 2025.0.0 - Contributors
-
-<table align="center">
-  <tr>
-    <td align="center">
-      <a href="https://github.com/YevhenZvieriev">
-        <img src="https://avatars.githubusercontent.com/u/43544955?v=4" width="100px;" alt="Contributor 1"/>
-        <br/>
-        <sub><b>Yevhen Zvieriev</b></sub>
-      </a>
-    </td>
-    <td align="center">
-      <a href="https://github.com/SilinMykola">
-        <img src="https://avatars.githubusercontent.com/u/15772032?v=4" width="100px;" alt="Contributor 2"/>
-        <br/>
-        <sub><b>Mykola Silin</b></sub>
-      </a>
-    </td>
-    <td align="center">
-      <a href="https://github.com/VitaliyBoyko">
-        <img src="https://avatars.githubusercontent.com/u/20116393?v=4" width="100px;" alt="Contributor 3"/>
-        <br/>
-        <sub><b>Vitalii Boiko</b></sub>
-      </a>
-    </td>
-  </tr>
+<table align="center" style="border-collapse: collapse; width: 100%; text-align: center;">
+  <caption style="font-size: 1.2em; margin-bottom: 10px;">
+    <strong>PhpStorm IDE Plugin</strong> for a better Magento 2 development workflow.
+  </caption>
+  <thead>
+  </thead>
+  <tbody>
+  </tbody>
+  <tfoot>
+    <tr style="background-color: #f9f9f9;">
+      <td colspan="3" style="padding: 20px;">
+        <h3 style="margin: 10px 0;">Support the Project</h3>
+        <p>If you find this plugin helpful and want to support its development, consider buying the contributors a coffee:</p>
+        <a href="https://buymeacoffee.com/vitalii_b" style="text-decoration: none;">
+          <img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Donate-orange.svg" alt="Buy Me a Coffee" style="margin: 10px 0;">
+        </a>
+        <p style="margin: 10px 0;">Thank you to our sponsors—your support means everything:</p>
+        <p><strong>Lucas van Staden</strong></p>
+        <p><strong>Ivan Chepurnyi</strong></p>
+        <p><strong>Michael Ryvlin</strong></p>
+      </td>
+    </tr>
+  </tfoot>
 </table>
 
-### Support the Project
+## Features
 
-If you find this plugin helpful and want to support its development, consider buying the contributors a coffee:
-
-[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Donate-orange.svg)](https://buymeacoffee.com/vitalii_b)
+* Configuration smart completion and references for XML/JavaScript files
+* `Navigate to configuration` reference in scope of class/interface
+* `Go to plugin` reference in scope of class/interface and method
+* `Navigate to Web API configuration` reference in scope of class/interface and method
+* Plugin class methods generation
+* Plugin declaration inspection
+* RequireJS reference navigation and completion
+* MFTF reference navigation and completion
+* GraphQL navigation line markers
+* Code generation
+* Inspections for XML configuration
 
 <!-- Plugin description end -->
 
@@ -62,20 +65,6 @@ If you find this plugin helpful and want to support its development, consider bu
 
 * PhpStorm >= 2023.1
 * JRE >= 17
-
-## Features
-
-* Configuration smart completion and references for XML/JavaScript files
-* `Navigate to configuration` reference in scope of class/interface
-* `Go to plugin` reference in scope of class/interface and method
-* `Navigate to Web API configuration` reference in scope of class/interface and method
-* Plugin class methods generation
-* Plugin declaration inspection
-* RequireJS reference navigation and completion
-* MFTF reference navigation and completion
-* GraphQL navigation line markers
-* Code generation
-* Inspections for XML configuration
 
 ## Setting up development environment
 

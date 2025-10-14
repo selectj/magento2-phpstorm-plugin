@@ -16,9 +16,6 @@ import com.magento.idea.magento2uct.execution.process.ReindexHandler;
 import com.magento.idea.magento2uct.packages.IndexRegistry;
 import com.magento.idea.magento2uct.packages.SupportedVersion;
 import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -34,42 +31,25 @@ public class ReindexDialog extends AbstractDialog {
     private JPanel contentPanel;
     private JComboBox<ComboBoxItemData> targetVersion;
     private JComboBox<ComboBoxItemData> targetIndex;
-    private JButton buttonOk;
-    private JButton buttonCancel;
     private JLabel targetVersionLabel;//NOPMD
     private JLabel targetIndexLabel;//NOPMD
 
     /**
      * Reindexing dialog.
      *
-     * @param project Project
+     * @param project   Project
      * @param directory PsiDirectory
      */
     public ReindexDialog(
             final @NotNull Project project,
             final @NotNull PsiDirectory directory
     ) {
-        super();
+        super(project);
 
         this.project = project;
         this.directory = directory;
 
-        setContentPane(contentPanel);
-        setModal(true);
         setTitle(ReindexVersionedIndexesAction.ACTION_NAME);
-        getRootPane().setDefaultButton(buttonOk);
-
-        buttonOk.addActionListener(event -> onOK());
-        buttonCancel.addActionListener(event -> onCancel());
-
-        // call onCancel() when cross is clicked
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(final WindowEvent event) {
-                onCancel();
-            }
-        });
 
         // call onCancel() on ESCAPE
         contentPanel.registerKeyboardAction(
@@ -77,12 +57,14 @@ public class ReindexDialog extends AbstractDialog {
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT
         );
+
+        init();
     }
 
     /**
      * Open reindexing dialog window.
      *
-     * @param project Project
+     * @param project   Project
      * @param directory PsiDirectory
      */
     public static void open(
@@ -93,15 +75,24 @@ public class ReindexDialog extends AbstractDialog {
                 project,
                 directory
         );
-        dialog.pack();
         dialog.centerDialog(dialog);
-        dialog.setVisible(true);
+        dialog.showDialog();
+    }
+
+    /**
+     * Create center panel.
+     *
+     * @return JComponent
+     */
+    @Override
+    protected JComponent createCenterPanel() {
+        return contentPanel;
     }
 
     /**
      * Execute reindexing action.
      */
-    private void onOK() {
+    protected void onWriteActionOK() {
         if (targetVersion.getSelectedItem() == null || targetIndex.getSelectedItem() == null) {
             return;
         }
@@ -135,8 +126,8 @@ public class ReindexDialog extends AbstractDialog {
     private void createUIComponents() {
         targetVersion = new ComboBox<>();
 
-        for (final String version : SupportedVersion.getSupportedVersions()) {
-            targetVersion.addItem(new ComboBoxItemData(version, version));
+        for (final SupportedVersion version : SupportedVersion.getSupportedVersions()) {
+            targetVersion.addItem(new ComboBoxItemData(version.getVersion(), version.getVersion()));
         }
         targetIndex = new ComboBox<>();
         targetIndex.addItem(new ComboBoxItemData("", " --- Choose Target Index --- "));

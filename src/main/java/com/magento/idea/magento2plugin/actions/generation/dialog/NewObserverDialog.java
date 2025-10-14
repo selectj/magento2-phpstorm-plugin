@@ -34,24 +34,19 @@ import com.magento.idea.magento2plugin.magento.packages.Package;
 import com.magento.idea.magento2plugin.stubs.indexes.EventNameIndex;
 import com.magento.idea.magento2plugin.ui.FilteredComboBox;
 import com.magento.idea.magento2plugin.util.CamelCaseToSnakeCase;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.KeyStroke;
 import javax.swing.event.DocumentEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings({
         "PMD.TooManyFields",
@@ -68,8 +63,6 @@ public class NewObserverDialog extends AbstractDialog {
     private final String moduleName;
     private final String modulePackage;
     private JPanel contentPanel;
-    private JButton buttonOK;
-    private JButton buttonCancel;
 
     @FieldValidation(rule = RuleRegistry.NOT_EMPTY,
             message = {NotEmptyRule.MESSAGE, OBSERVER_NAME})
@@ -107,36 +100,16 @@ public class NewObserverDialog extends AbstractDialog {
             final String modulePackage,
             final String moduleName
     ) {
-        super();
+        super(project);
 
         this.project = project;
         this.baseDir = directory;
         this.modulePackage = modulePackage;
         this.moduleName = moduleName;
 
-        setContentPane(contentPanel);
-        setModal(false);
         setTitle(NewObserverAction.ACTION_DESCRIPTION);
-        getRootPane().setDefaultButton(buttonOK);
 
-        buttonOK.addActionListener((final ActionEvent event) -> onOK());
-        buttonCancel.addActionListener((final ActionEvent event) -> onCancel());
-
-        // call onCancel() when cross is clicked
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(final WindowEvent event) {
-                onCancel();
-            }
-        });
-
-        // call onCancel() on ESCAPE
-        contentPanel.registerKeyboardAction(
-                (final ActionEvent event) -> onCancel(),
-                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-                JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT
-        );
+        // DialogWrapper handles button actions and ESC key automatically
 
         className.getDocument().addDocumentListener(new DocumentAdapter() {
             @SuppressWarnings("PMD.AccessorMethodGeneration")
@@ -146,9 +119,7 @@ public class NewObserverDialog extends AbstractDialog {
             }
         });
 
-        addComponentListener(
-                new FocusOnAFieldListener(() -> className.requestFocusInWindow())
-        );
+        init();
     }
 
     /**
@@ -169,9 +140,19 @@ public class NewObserverDialog extends AbstractDialog {
                 modulePackage,
                 moduleName
         );
-        dialog.pack();
         dialog.centerDialog(dialog);
-        dialog.setVisible(true);
+        dialog.showDialog();
+    }
+
+    /**
+     * Create center panel.
+     *
+     * @return JComponent
+     */
+    @Nullable
+    @Override
+    protected JComponent createCenterPanel() {
+        return contentPanel;
     }
 
     private  String getModuleName() {
@@ -198,48 +179,47 @@ public class NewObserverDialog extends AbstractDialog {
         return directoryStructure.getText().trim();
     }
 
-    protected void onOK() {
-        if (validateFields()) {
-            PsiDirectory observerDirectory = baseDir;
+    protected void onWriteActionOK() {
+        PsiDirectory observerDirectory = baseDir;
 
-            if (!getDirectoryStructure().isEmpty()) {
-                observerDirectory = DirectoryGenerator.getInstance().findOrCreateSubdirectories(
-                        baseDir,
-                        getDirectoryStructure()
-                );
-            }
-            new ModuleObserverGenerator(
-                    new ModuleObserverData(
-                            modulePackage,
-                            moduleName,
-                            getObserverClassFqn(),
-                            getEventName(),
-                            observerDirectory,
-                            ModuleObserverFile.resolveClassNameFromInput(getClassName())
-                    ),
-                    project
-            ).generate(NewObserverAction.ACTION_NAME, true);
-
-            new ObserverEventsXmlGenerator(
-                    new ObserverEventsXmlData(
-                            getObserverArea(),
-                            getModuleName().replace(
-                                    Package.fqnSeparator,
-                                    Package.vendorModuleNameSeparator
-                            ),
-                            getEventName(),
-                            getObserverName(),
-                            getObserverClassFqn().concat(Package.fqnSeparator).concat(
-                                    ModuleObserverFile.resolveClassNameFromInput(getClassName())
-                            )
-                    ),
-                    project
-            ).generate(NewObserverAction.ACTION_NAME);
-            exit();
+        if (!getDirectoryStructure().isEmpty()) {
+            observerDirectory = DirectoryGenerator.getInstance().findOrCreateSubdirectories(
+                    baseDir,
+                    getDirectoryStructure()
+            );
         }
+        new ModuleObserverGenerator(
+                new ModuleObserverData(
+                        modulePackage,
+                        moduleName,
+                        getObserverClassFqn(),
+                        getEventName(),
+                        observerDirectory,
+                        ModuleObserverFile.resolveClassNameFromInput(getClassName())
+                ),
+                project
+        ).generate(NewObserverAction.ACTION_NAME, true);
+
+        new ObserverEventsXmlGenerator(
+                new ObserverEventsXmlData(
+                        getObserverArea(),
+                        getModuleName().replace(
+                                Package.fqnSeparator,
+                                Package.vendorModuleNameSeparator
+                        ),
+                        getEventName(),
+                        getObserverName(),
+                        getObserverClassFqn().concat(Package.fqnSeparator).concat(
+                                ModuleObserverFile.resolveClassNameFromInput(getClassName())
+                        )
+                ),
+                project
+        ).generate(NewObserverAction.ACTION_NAME);
+        exit();
     }
 
-    private boolean validateFields() {
+    @Override
+    protected boolean validateFormFields() {
         final PsiFile[] directoryFiles = getDirectoryFiles(baseDir);
         final Field classNameField = GetReflectionFieldUtil.getByName("className", this.getClass());
 
@@ -275,7 +255,7 @@ public class NewObserverDialog extends AbstractDialog {
             return false;
         }
 
-        return validateFormFields();
+        return super.validateFormFields();
     }
 
     private PsiFile[] getDirectoryFiles(final PsiDirectory targetDirectory) {

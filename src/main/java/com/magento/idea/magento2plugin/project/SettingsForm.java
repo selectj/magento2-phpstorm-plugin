@@ -120,8 +120,12 @@ public class SettingsForm implements PhpFrameworkConfigurable {
 
     @Override
     public boolean isModified() {
+        if (moduleDefaultLicenseName == null) {
+            return true;
+        }
+
         final boolean licenseChanged = !moduleDefaultLicenseName.getText().equals(
-                Settings.defaultLicense
+                getSettings().defaultLicense
         );
         final boolean versionChanged = !magentoVersion.getText().equals(
                 getSettings().magentoVersion
@@ -195,8 +199,6 @@ public class SettingsForm implements PhpFrameworkConfigurable {
                 FileChooserDescriptorFactory.createSingleFolderDescriptor();
         final ComponentWithBrowseButton.BrowseFolderActionListener<JTextField> browseFolderListener
                 = new ComponentWithBrowseButton.BrowseFolderActionListener<JTextField>(
-                "Magento Root Directory",
-                "Choose Magento root directory",
                 this.magentoPath,
                 project,
                 descriptor,

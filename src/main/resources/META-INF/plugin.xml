@@ -7,53 +7,11 @@
 <idea-plugin require-restart="true">
     <id>com.magento.idea.magento2plugin</id>
     <name>Magento PhpStorm</name>
-    <version>2025.0.0</version>
+    <version>2025.2.1</version>
     <vendor url="https://github.com/magento/magento2-phpstorm-plugin">Magento Inc.</vendor>
 
     <description><![CDATA[
         This is a PhpStorm IDE plugin for a better Magento 2 development workflow.
-
-<h3>Main Features</h3>
-<ul>
-    <li><strong>Code Generation:</strong> Quickly generate boilerplate Magento code like plugins, observers, XML configurations, and more.</li>
-    <li><strong>Inspections:</strong> Identify and fix potential issues with Magento-specific code quality tools.</li>
-    <li><strong>Reference Navigation:</strong> Easily navigate between Magento files, classes, and references.</li>
-    <li><strong>Code Completion:</strong> Auto-complete Magento-specific code constructs, including XML tags, class names, and methods.</li>
-    <li><strong>Copy Magento Path:</strong> Copy file paths in Magento format.</li>
-    <li><strong>Upgrade Compatibility Tool:</strong> Assist in upgrading Magento modules and code for newer Magento versions.</li>
-    <li><strong>URN Mapping:</strong> Resolve Magento URNs for correct file associations and navigation.</li>
-</ul>
-<h3>Version 2025.0.0 - Contributors</h3>
-<table align="center">
-    <tr>
-        <td align="center">
-            <a href="https://github.com/YevhenZvieriev">
-                <img src="https://avatars.githubusercontent.com/u/43544955?v=4" width="100px;" alt="Contributor 1"/>
-                <br/>
-                <sub><b>Yevhen Zvieriev</b></sub>
-            </a>
-        </td>
-        <td align="center">
-            <a href="https://github.com/SilinMykola">
-                <img src="https://avatars.githubusercontent.com/u/15772032?v=4" width="100px;" alt="Contributor 2"/>
-                <br/>
-                <sub><b>Mykola Silin</b></sub>
-            </a>
-        </td>
-        <td align="center">
-            <a href="https://github.com/VitaliyBoyko">
-                <img src="https://avatars.githubusercontent.com/u/20116393?v=4" width="100px;" alt="Contributor 3"/>
-                <br/>
-                <sub><b>Vitalii Boiko</b></sub>
-            </a>
-        </td>
-    </tr>
-</table>
-
-<h3>Support the Project</h3>
-
-If you find this plugin helpful and want to support its development, consider buying the contributors a coffee:
-<a href="https://buymeacoffee.com/vitalii_b">Buy Me a Coffee</a>
     ]]></description>
 
     <change-notes><![CDATA[
@@ -66,7 +24,7 @@ If you find this plugin helpful and want to support its development, consider bu
     </change-notes>
 
     <!-- please see http://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
-    <idea-version since-build="242.20224.300"/>
+    <idea-version since-build="252.18003.43"/>
 
     <!-- please see http://confluence.jetbrains.com/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
          on how to target different products -->
@@ -78,6 +36,7 @@ If you find this plugin helpful and want to support its development, consider bu
     <depends>com.intellij.css</depends>
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.platform.images</depends>
+    <depends>com.intellij.modules.json</depends>
     <depends>com.intellij.copyright</depends>
     <depends optional="true" config-file="withJsGraphQl.xml">com.intellij.lang.jsgraphql</depends>
 
@@ -151,7 +110,7 @@ If you find this plugin helpful and want to support its development, consider bu
         <group id="NewEavAttributeGroup" class="com.magento.idea.magento2plugin.actions.groups.NewEavAttributeGroup" text="Magento 2 EAV Attribute" popup="true">
             <action id="NewProductEavAttribute" class="com.magento.idea.magento2plugin.actions.generation.eavattribute.NewProductEavAttributeAction" />
             <action id="NewCatalogEavAttribute" class="com.magento.idea.magento2plugin.actions.generation.eavattribute.NewCategoryEavAttributeAction" />
-            <action id="NewCustomerAttribute" class="com.magento.idea.magento2plugin.actions.generation.NewCustomerEavAttributeAction" />
+            <action id="NewCustomerAttribute" class="com.magento.idea.magento2plugin.actions.generation.eavattribute.NewCustomerEavAttributeAction" />
             <add-to-group group-id="MagentoNewModuleFileGroup" anchor="last"/>
         </group>
 
@@ -193,8 +152,8 @@ If you find this plugin helpful and want to support its development, consider bu
 
         <action id="CopyMagentoPath"
                 class="com.magento.idea.magento2plugin.actions.CopyMagentoPath"
-                text="Magento Path"
-                description="Copies Magento's path of file depending on file type">
+                text="Magento Asset"
+                description="Copies Magento-formatted file asset path depending on file type">
             <add-to-group group-id="CopyFileReference" anchor="last"/>
         </action>
         <group id="UctReindexMenu">
@@ -215,6 +174,13 @@ If you find this plugin helpful and want to support its development, consider bu
             <separator/>
             <add-to-group group-id="ToolsMenu" anchor="last"/>
         </group>
+
+        <action id="AddMagentoContentRoot" class="com.magento.idea.magento2plugin.actions.content.root.MarkDirectoryAsMagentoContentRot" text="Mark Directory As Magento Code Root" description="Adds Magento code root">
+            <add-to-group group-id="MarkRootGroup" anchor="last"/>
+        </action>
+        <action id="RemoveMagentoContentRoot" class="com.magento.idea.magento2plugin.actions.content.root.UnmarkDirectoryAsMagentoContentRot" text="Unmark Directory As Magento Code Root" description="Removes Magento code root">
+            <add-to-group group-id="MarkRootGroup" anchor="last"/>
+        </action>
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">
@@ -734,6 +700,8 @@ If you find this plugin helpful and want to support its development, consider bu
         <notificationGroup
                 id="Magento Notifications"
                 displayType="BALLOON" />
+
+        <projectViewNodeDecorator implementation="com.magento.idea.magento2plugin.decorator.MagentoFolderDecorator"/>
     </extensions>
 
     <extensions defaultExtensionNs="com.jetbrains.php">

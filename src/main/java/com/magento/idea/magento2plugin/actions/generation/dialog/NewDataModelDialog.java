@@ -31,10 +31,6 @@ import com.magento.idea.magento2plugin.ui.table.DeleteRowButton;
 import com.magento.idea.magento2plugin.ui.table.TableButton;
 import com.magento.idea.magento2plugin.util.RegExUtil;
 import com.magento.idea.magento2plugin.util.magento.GetModuleNameByDirectoryUtil;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JButton;
@@ -45,13 +41,15 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.KeyStroke;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings({
-        "PMD.ExcessiveImports"
+        "PMD.ExcessiveImports",
+        "PMD.ConstructorCallsOverridableMethod",
+        "PMD.ImmutableField"
 })
 public class NewDataModelDialog extends AbstractDialog {
 
@@ -63,13 +61,13 @@ public class NewDataModelDialog extends AbstractDialog {
 
     private final Project project;
     private final String moduleName;
-    private final ValidatorBundle validatorBundle;
-    private final CommonBundle commonBundle;
+    private final transient ValidatorBundle validatorBundle;
+    private final transient CommonBundle commonBundle;
     private final List<String> properties;
 
-    private JPanel contentPanel;
-    private JButton buttonOK;
-    private JButton buttonCancel;
+    private JPanel contentPanel; //NOPMD
+    private JButton buttonOK; //NOPMD
+    private JButton buttonCancel; //NOPMD
     private JTable propertyTable;
     private JButton addProperty;
     private JCheckBox createInterface;
@@ -87,7 +85,7 @@ public class NewDataModelDialog extends AbstractDialog {
             final @NotNull Project project,
             final @NotNull PsiDirectory directory
     ) {
-        super();
+        super(project);
 
         this.project = project;
         this.moduleName = GetModuleNameByDirectoryUtil.execute(directory, project);
@@ -95,33 +93,22 @@ public class NewDataModelDialog extends AbstractDialog {
         this.commonBundle = new CommonBundle();
         this.properties = new ArrayList<>();
 
-        setContentPane(contentPanel);
-        setModal(false);
         setTitle(NewDataModelAction.ACTION_DESCRIPTION);
-        getRootPane().setDefaultButton(buttonOK);
-
-        buttonOK.addActionListener((final ActionEvent event) -> onOK());
-        buttonCancel.addActionListener((final ActionEvent event) -> onCancel());
-
-        // call onCancel() on dialog close
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(final WindowEvent event) {
-                onCancel();
-            }
-        });
 
         initPropertiesTable();
 
-        // call onCancel() on ESCAPE KEY press
-        contentPanel.registerKeyboardAction(
-                (final ActionEvent event) -> onCancel(),
-                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-                JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT
-        );
+        init();
+    }
 
-        addComponentListener(new FocusOnAFieldListener(() -> modelName.requestFocusInWindow()));
+    /**
+     * Create center panel.
+     *
+     * @return JComponent
+     */
+    @Nullable
+    @Override
+    protected JComponent createCenterPanel() {
+        return contentPanel;
     }
 
     /**
@@ -132,37 +119,34 @@ public class NewDataModelDialog extends AbstractDialog {
             final @NotNull PsiDirectory directory
     ) {
         final NewDataModelDialog dialog = new NewDataModelDialog(project, directory);
-        dialog.pack();
         dialog.centerDialog(dialog);
-        dialog.setVisible(true);
+        dialog.showDialog();
     }
 
     /**
      * Proceed with generation.
      */
-    private void onOK() {
+    protected void onWriteActionOK() {
+
         if (propertyTable.isEditing()) {
             propertyTable.getCellEditor().stopCellEditing();
         }
 
-        if (validateFormFields()) {
-            formatProperties();
-            generateDataModelFile();
+        formatProperties();
+        generateDataModelFile();
 
-            if (createInterface.isSelected()) {
-                generateDataModelInterfaceFile();
-                generatePreferenceForInterface();
-            }
-            exit();
+        if (createInterface.isSelected()) {
+            generateDataModelInterfaceFile();
+            generatePreferenceForInterface();
         }
+        exit();
     }
 
     @Override
     protected boolean validateFormFields() {
-        boolean valid = false;
+        boolean valid = super.validateFormFields();
 
-        if (super.validateFormFields()) {
-            valid = true;
+        if (valid) {
             final String errorTitle = commonBundle.message("common.error");
             final int column = 0;
 

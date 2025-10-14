@@ -24,10 +24,7 @@ import com.magento.idea.magento2uct.settings.UctSettingsService;
 import com.magento.idea.magento2uct.util.module.UctModulePathValidatorUtil;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.Objects;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -52,8 +49,6 @@ public class ConfigurationDialog extends AbstractDialog {
     private JComboBox<ComboBoxItemData> issueSeverityLevel;
 
     private JPanel contentPanel;
-    private JButton buttonCancel;
-    private JButton buttonOk;
     private JLabel currentVersionLabel;//NOPMD
     private JLabel modulePathLabel;//NOPMD
     private JLabel targetVersionLabel;//NOPMD
@@ -70,29 +65,15 @@ public class ConfigurationDialog extends AbstractDialog {
      * @param project Project
      */
     public ConfigurationDialog(final @NotNull Project project) {
-        super();
+        super(project);
 
         this.project = project;
         settingsService = UctSettingsService.getInstance(project);
 
-        setContentPane(contentPanel);
-        setModal(true);
         setTitle(ConfigureUctAction.ACTION_NAME);
-        getRootPane().setDefaultButton(buttonOk);
 
         hasAdditionalPath.addActionListener(event ->
                 refreshAdditionalFields(hasAdditionalPath.isSelected()));
-        buttonOk.addActionListener(event -> onOK());
-        buttonCancel.addActionListener(event -> onCancel());
-
-        // call onCancel() when cross is clicked
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(final WindowEvent event) {
-                onCancel();
-            }
-        });
 
         // call onCancel() on ESCAPE
         contentPanel.registerKeyboardAction(
@@ -111,6 +92,8 @@ public class ConfigurationDialog extends AbstractDialog {
         enableCommentPath.setForeground(JBColor.blue);
         setDefaultValues();
         refreshAdditionalFields(hasAdditionalPath.isSelected());
+
+        init();
     }
 
     /**
@@ -120,16 +103,25 @@ public class ConfigurationDialog extends AbstractDialog {
      */
     public static void open(final @NotNull Project project) {
         final ConfigurationDialog dialog = new ConfigurationDialog(project);
-        dialog.pack();
         dialog.centerDialog(dialog);
-        dialog.setVisible(true);
+        dialog.showDialog();
+    }
+
+    /**
+     * Create center panel.
+     *
+     * @return JComponent
+     */
+    @Override
+    protected JComponent createCenterPanel() {
+        return contentPanel;
     }
 
     /**
      * Save configuration.
      */
     @SuppressWarnings("PMD.CyclomaticComplexity")
-    private void onOK() {
+    protected void onWriteActionOK() {
         modulePathError.setText("");
         additionalPathError.setText("");
 
@@ -275,14 +267,14 @@ public class ConfigurationDialog extends AbstractDialog {
     private void createUIComponents() {
         targetVersion = new ComboBox<>();
 
-        for (final String version : SupportedVersion.getSupportedVersions()) {
-            targetVersion.addItem(new ComboBoxItemData(version, version));
+        for (final SupportedVersion version : SupportedVersion.getSupportedVersions()) {
+            targetVersion.addItem(new ComboBoxItemData(version.getVersion(), version.getVersion()));
         }
         currentVersion = new ComboBox<>();
         currentVersion.addItem(new ComboBoxItemData("", "Less than 2.3.0"));
 
-        for (final String version : SupportedVersion.getSupportedVersions()) {
-            currentVersion.addItem(new ComboBoxItemData(version, version));
+        for (final SupportedVersion version : SupportedVersion.getSupportedVersions()) {
+            currentVersion.addItem(new ComboBoxItemData(version.getVersion(), version.getVersion()));
         }
         issueSeverityLevel = new ComboBox<>();
 
